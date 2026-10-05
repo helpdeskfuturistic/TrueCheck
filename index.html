@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TrueCheck helps you evaluate factual claims using available evidence.">
+  <title>TrueCheck — Verify information</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="index.html" aria-label="TrueCheck home">TRUECHECK<span class="wordmark-dot">.</span></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a class="active" href="#verify">Verify</a>
+      <a href="#history">History</a>
+      <a href="#about">About</a>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+  </header>
+
+  <main>
+    <section class="hero page-width" id="verify">
+      <p class="eyebrow">INFORMATION, VERIFIED</p>
+      <h1>Check what you hear.<br>Read. Share.</h1>
+      <p class="hero-copy">Evaluate factual claims using available evidence and clear explanations.</p>
+
+      <form id="quickVerifyForm" class="quick-form">
+        <label class="sr-only" for="quickClaim">Enter a claim to verify</label>
+        <input id="quickClaim" name="claim" type="text" maxlength="2000" placeholder="Enter a claim you want to verify..." autocomplete="off">
+        <button class="button button-dark" type="submit">Verify <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="form-note">Do not include passwords, private details, or other sensitive information.</p>
+
+      <div class="input-options" aria-label="Other ways to submit a claim">
+        <button class="option" data-mode="voice" type="button">
+          <span class="option-icon" aria-hidden="true">◖</span><span class="option-title">Voice</span><span class="option-desc">Speak a claim</span>
+        </button>
+        <button class="option" data-mode="upload" type="button">
+          <span class="option-icon" aria-hidden="true">↑</span><span class="option-title">Upload</span><span class="option-desc">PDF, image or text</span>
+        </button>
+        <button class="option" data-mode="image" type="button">
+          <span class="option-icon" aria-hidden="true">▧</span><span class="option-title">Image OCR</span><span class="option-desc">Extract text from images</span>
+        </button>
+        <button class="option" data-mode="url" type="button">
+          <span class="option-icon" aria-hidden="true">↗</span><span class="option-title">Article URL</span><span class="option-desc">Paste a news link</span>
+        </button>
+      </div>
+      <p id="globalNotice" class="notice" role="status" hidden></p>
+    </section>
+
+    <section id="workspace" class="workspace page-width" hidden>
+      <div class="section-heading">
+        <div><p class="eyebrow">SUBMIT A CLAIM</p><h2 id="workspaceTitle">Verify a claim</h2></div>
+        <button id="closeWorkspace" class="text-button" type="button">Close ×</button>
+      </div>
+      <div class="mode-tabs" role="tablist" aria-label="Input type">
+        <button class="mode-tab active" role="tab" aria-selected="true" data-mode="text">Text</button>
+        <button class="mode-tab" role="tab" aria-selected="false" data-mode="voice">Voice</button>
+        <button class="mode-tab" role="tab" aria-selected="false" data-mode="upload">Upload</button>
+        <button class="mode-tab" role="tab" aria-selected="false" data-mode="image">Image</button>
+        <button class="mode-tab" role="tab" aria-selected="false" data-mode="url">URL</button>
+      </div>
+
+      <form id="verifyForm" novalidate>
+        <div class="mode-panel" data-panel="text">
+          <label class="sr-only" for="claimText">Claim text</label>
+          <textarea id="claimText" maxlength="2000" placeholder="Type the factual claim you want to check..." rows="6"></textarea>
+          <div class="field-meta"><span>Be specific and include relevant context.</span><span id="charCount">0 / 2000</span></div>
+        </div>
+        <div class="mode-panel" data-panel="voice" hidden>
+          <div class="voice-panel">
+            <button id="recordButton" class="record-button" type="button" aria-label="Start voice recording">●</button>
+            <p id="voiceStatus" class="voice-status">Use your microphone to speak a claim.</p>
+            <p class="muted small">Speech recognition depends on browser support and may vary by accent.</p>
+          </div>
+          <label for="voiceTranscript">Transcription (edit before checking)</label>
+          <textarea id="voiceTranscript" rows="4" maxlength="2000" placeholder="Your transcription will appear here..."></textarea>
+        </div>
+        <div class="mode-panel" data-panel="upload" hidden>
+          <label class="drop-zone" for="fileInput">
+            <span class="drop-symbol">↑</span><strong>Choose a file or drop it here</strong>
+            <span class="muted">Images, PDF, TXT and text files</span>
+            <input id="fileInput" type="file" accept=".pdf,.txt,.md,.csv,image/*,text/plain,application/pdf">
+          </label>
+          <p id="fileStatus" class="muted small">For this front-end demo, text files are read locally. PDF and image extraction needs an OCR/document service.</p>
+          <label for="fileExtracted">Extracted text (review and edit)</label>
+          <textarea id="fileExtracted" rows="4" maxlength="2000" placeholder="Text extracted from the selected file will appear here..."></textarea>
+        </div>
+        <div class="mode-panel" data-panel="image" hidden>
+          <label class="drop-zone" for="imageInput">
+            <span class="drop-symbol">▧</span><strong>Select a screenshot, poster or meme</strong>
+            <span class="muted">PNG, JPG, WEBP and other browser-supported images</span>
+            <input id="imageInput" type="file" accept="image/*">
+          </label>
+          <p id="imageStatus" class="muted small">OCR is not connected in this demo. Connect an OCR service to extract image text.</p>
+          <label for="imageExtracted">Extracted text (review and edit)</label>
+          <textarea id="imageExtracted" rows="4" maxlength="2000" placeholder="OCR text will appear here after an OCR service is connected..."></textarea>
+        </div>
+        <div class="mode-panel" data-panel="url" hidden>
+          <label for="articleUrl">Article URL</label>
+          <input id="articleUrl" type="url" placeholder="https://example.com/news-article">
+          <p class="muted small">A backend is needed to safely fetch and parse article content. Do not paste private or internal URLs.</p>
+          <label for="articleText">Article text or key claim (optional)</label>
+          <textarea id="articleText" rows="4" maxlength="2000" placeholder="Paste the article text or the specific claim here..."></textarea>
+        </div>
+        <div id="validationMessage" class="validation-message" role="alert" hidden></div>
+        <div class="form-options">
+          <label for="languageSelect">Input language</label>
+          <select id="languageSelect" aria-label="Input language">
+            <option value="en">English</option>
+            <option value="af">Afrikaans</option>
+            <option value="pt">Portuguese</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button class="button button-dark" type="submit">Check claim <span aria-hidden="true">→</span></button>
+          <span class="muted small">Demo mode uses illustrative results, not live fact-checking.</span>
+        </div>
+      </form>
+    </section>
+
+    <section id="resultSection" class="result-section page-width" hidden aria-live="polite">
+      <div class="section-heading">
+        <div><p class="eyebrow">VERIFICATION REPORT</p><h2>Result</h2></div>
+        <button id="newCheck" class="text-button" type="button">New check +</button>
+      </div>
+      <article class="report">
+        <div class="report-top">
+          <div><p class="label">CLAIM</p><blockquote id="resultClaim"></blockquote><p class="muted small" id="resultInputType"></p></div>
+          <div class="verdict-block"><p class="label">DEMO VERDICT</p><h3 id="resultVerdict">UNVERIFIED</h3><p class="muted small">Illustrative only</p></div>
+        </div>
+        <div class="report-body">
+          <p class="label">EXPLANATION</p>
+          <p id="resultExplanation"></p>
+          <div class="divider"></div>
+          <p class="label">EVIDENCE</p>
+          <p id="resultEvidence" class="muted">No sources have been retrieved. Connect a retrieval and verification backend to display evidence.</p>
+          <div class="divider"></div>
+          <div class="report-actions">
+            <div><p class="label">STATUS</p><p class="small muted">No live source checking connected</p></div>
+            <div class="action-buttons">
+              <button id="speakResult" class="button button-light" type="button">Read aloud</button>
+              <button id="copyResult" class="button button-light" type="button">Copy result</button>
+              <button id="shareResult" class="button button-dark" type="button">Share</button>
+            </div>
+          </div>
+        </div>
+      </article>
+      <div class="result-notice">
+        <strong>Evidence first.</strong>
+        <span>When evidence is insufficient, TrueCheck should return an unverified result instead of guessing.</span>
+      </div>
+      <p class="disclaimer">This prototype does not determine factual accuracy. Verdicts are placeholders until a fact-checking service and evidence retrieval are connected.</p>
+    </section>
+
+    <section class="states-section page-width">
+      <div class="section-heading">
+        <div><p class="eyebrow">SYSTEM STATES</p><h2>Clear when the answer is unclear.</h2></div>
+        <p class="muted states-intro">These are interface states for cases where a claim needs context, evidence is unavailable, or a service fails.</p>
+      </div>
+      <div class="states-grid">
+        <article class="state-card">
+          <p class="label">01 / AMBIGUOUS</p>
+          <h3>More context required.</h3>
+          <p>The claim does not identify enough information to determine what should be checked.</p>
+          <button class="text-button demo-state" data-state="ambiguous" type="button">Preview state →</button>
+        </article>
+        <article class="state-card">
+          <p class="label">02 / INSUFFICIENT</p>
+          <h3>Not enough evidence.</h3>
+          <p>Available sources do not support a reliable conclusion. The system should not guess.</p>
+          <button class="text-button demo-state" data-state="insufficient" type="button">Preview state →</button>
+        </article>
+        <article class="state-card">
+          <p class="label">03 / OUT OF SCOPE</p>
+          <h3>This is not a factual claim.</h3>
+          <p>Opinions, instructions, personal requests and unrelated questions should be redirected.</p>
+          <button class="text-button demo-state" data-state="outscope" type="button">Preview state →</button>
+        </article>
+        <article class="state-card">
+          <p class="label">04 / ERROR</p>
+          <h3>Verification unavailable.</h3>
+          <p>Give the user a useful recovery message when retrieval, OCR, speech or an API fails.</p>
+          <button class="text-button demo-state" data-state="error" type="button">Preview state →</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="history" class="history-section page-width">
+      <div class="section-heading">
+        <div><p class="eyebrow">YOUR ACTIVITY</p><h2>Verification history</h2><p class="muted">Checks made in this browser on this device.</p></div>
+        <button id="clearHistory" class="text-button" type="button">Clear history</button>
+      </div>
+      <div id="historyEmpty" class="empty-state"><p>No checks yet.</p><span class="muted">Your recent checks will appear here.</span></div>
+      <div class="table-wrap" id="historyTableWrap" hidden>
+        <table>
+          <thead><tr><th>Date</th><th>Claim</th><th>Verdict</th><th>Input</th><th></th></tr></thead>
+          <tbody id="historyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="about" class="about-section">
+      <div class="page-width about-grid">
+        <div><p class="eyebrow">OUR APPROACH</p><h2>Verify information.<br>Not assumptions.</h2></div>
+        <p class="about-copy">TrueCheck is designed to help people evaluate factual claims using available evidence. It should communicate uncertainty clearly and never present a guess as a verified fact.</p>
+      </div>
+      <div class="page-width process-grid">
+        <article><span class="step-number">01</span><h3>Submit</h3><p>Enter a claim, upload a file, paste a URL or speak naturally.</p></article>
+        <article><span class="step-number">02</span><h3>Analyze</h3><p>Identify whether the input contains a factual claim that can be checked.</p></article>
+        <article><span class="step-number">03</span><h3>Verify</h3><p>Compare the claim with relevant, credible and traceable evidence.</p></article>
+        <article><span class="step-number">04</span><h3>Explain</h3><p>Present the findings, sources and limitations in clear language.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <div id="stateOverlay" class="state-overlay" hidden>
+    <div class="state-dialog" role="dialog" aria-modal="true" aria-labelledby="stateDialogTitle">
+      <button id="closeState" class="dialog-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">TRUECHECK STATUS</p>
+      <h2 id="stateDialogTitle">Status</h2>
+      <p id="stateDialogText"></p>
+      <div id="stateDialogAction" class="dialog-action"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer page-width">
+    <a class="wordmark" href="index.html">TRUECHECK<span class="wordmark-dot">.</span></a>
+    <p class="muted small">A verification platform for a more informed world.</p>
+    <a href="#verify">Back to top ↑</a>
+  </footer>
+  <script src="js/app.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/upload.js"></script>
+</body>
+</html>
